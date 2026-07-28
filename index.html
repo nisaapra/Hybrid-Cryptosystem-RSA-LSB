@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secure Message Application</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-icon">🔐</span>
+          <span class="brand-text">Secure<span class="brand-highlight">Message</span></span>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" data-tab="rsa">
+            <span class="nav-icon">🔑</span>
+            <span class="nav-label">RSA Cryptography</span>
+          </button>
+          <button class="nav-btn" data-tab="lsb">
+            <span class="nav-icon">🖼️</span>
+            <span class="nav-label">LSB Steganography</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="content-header">
+          <div>
+            <h1 class="page-title">Secure Message Application</h1>
+            <p class="page-subtitle">Encrypt, Decrypt, and Hide Messages Securely</p>
+          </div>
+          <div class="header-badges">
+            <span class="badge badge-rsa">RSA 2048-bit</span>
+            <span class="badge badge-lsb">LSB Stego</span>
+          </div>
+        </header>
+
+<!-- ============================================================ -->
+<!-- TAB 1: RSA CRYPTOGRAPHY -->
+<!-- ============================================================ -->
+<section id="rsa" class="tab-panel active">
+  <div class="panel-grid single">
+    <div class="card card-rsa">
+      <div class="card-header">
+        <div class="card-icon">🔐</div>
+        <div>
+          <h3 class="card-title">RSA Cryptography</h3>
+          <p class="card-subtitle">Enkripsi &amp; Dekripsi dengan RSA 2048-bit</p>
+        </div>
+        <span class="card-badge">2048-bit</span>
+      </div>
+      <div class="card-body">
+        <div class="divider"></div>
+
+        <!-- ============================================================ -->
+        <!-- INPUT MODE: Manual atau Dokumen -->
+        <!-- ============================================================ -->
+        <div class="form-group">
+          <label class="form-label">📂 Pilih Sumber Teks</label>
+          <div class="input-mode-selector">
+            <button type="button" class="mode-btn active" data-mode="manual" id="mode-manual-btn">
+              ✏️ Manual
+            </button>
+            <button type="button" class="mode-btn" data-mode="document" id="mode-document-btn">
+              📄 Dari Dokumen
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode: Manual Input -->
+        <div id="rsa-manual-mode" class="input-mode-panel active">
+          <div class="form-group">
+            <label class="form-label">📝 Masukkan Teks untuk Enkripsi</label>
+            <textarea 
+              id="rsa-plaintext" 
+              class="form-input form-textarea" 
+              placeholder="Tulis pesan yang ingin dienkripsi..."
+              rows="3"
+            ></textarea>
+            <div class="char-counter">
+              <span id="rsa-char-count">0</span> karakter
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode: Upload Dokumen -->
+        <div id="rsa-document-mode" class="input-mode-panel">
+          <div class="form-group">
+            <label class="form-label">📄 Upload Dokumen</label>
+            <div class="file-dropzone" id="rsa-doc-dropzone">
+              <input type="file" id="rsa-document-input" accept=".txt,.pdf,.docx,.doc" />
+              <div class="dropzone-content">
+                <span class="dropzone-icon">📄</span>
+                <p>Seret &amp; letakkan atau <span class="dropzone-link">pilih dokumen</span></p>
+                <span class="dropzone-hint">TXT, PDF, DOCX</span>
+              </div>
+            </div>
+            <div id="rsa-doc-preview-container" class="file-preview hidden">
+              <div class="file-info">
+                <span class="file-icon">📄</span>
+                <span id="rsa-doc-filename" class="file-name">dokumen.pdf</span>
+                <button type="button" class="file-remove" id="rsa-doc-remove">✕</button>
+              </div>
+              <div id="rsa-doc-content-preview" class="doc-content-preview hidden">
+                <div class="doc-content-label">📖 Isi Dokumen:</div>
+                <div id="rsa-doc-content-text" class="doc-content-text"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ENKRIPSI -->
+        <div class="form-group">
+          <button type="button" class="btn btn-rsa" id="rsa-encrypt-btn">
+            🔒 Encrypt
+          </button>
+        </div>
+
+        <div id="rsa-encrypt-result" class="result-box hidden">
+          <div class="result-label">🔐 Ciphertext (Hasil Enkripsi)</div>
+          <code id="rsa-ciphertext-display" class="result-code">-</code>
+          <button type="button" class="btn btn-sm btn-copy" id="copy-rsa-cipher-btn">📋 Copy</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- DEKRIPSI -->
+        <div class="form-group">
+          <label class="form-label">🔐 Masukkan Ciphertext untuk Dekripsi</label>
+          <textarea 
+            id="rsa-ciphertext-input" 
+            class="form-input form-textarea" 
+            placeholder="Tempel ciphertext di sini..."
+            rows="2"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <button type="button" class="btn btn-rsa" id="rsa-decrypt-btn">
+            🔓 Decrypt
+          </button>
+        </div>
+
+        <div id="rsa-decrypt-result" class="result-box hidden">
+          <div class="result-label success">✅ Plaintext (Hasil Dekripsi)</div>
+          <code id="rsa-plaintext-display" class="result-code success">-</code>
+          <button type="button" class="btn btn-sm btn-copy" id="copy-rsa-plain-btn">📋 Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+        <!-- ============================================================ -->
+        <!-- TAB 2: LSB STEGANOGRAPHY -->
+        <!-- ============================================================ -->
+        <section id="lsb" class="tab-panel">
+          <div class="panel-grid">
+            <!-- Card LSB: Hide Message -->
+            <div class="card card-lsb">
+              <div class="card-header">
+                <div class="card-icon">📥</div>
+                <div>
+                  <h3 class="card-title">LSB Steganography</h3>
+                  <p class="card-subtitle">Sisipkan pesan ke dalam gambar</p>
+                </div>
+                <span class="card-badge">Hide</span>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">🖼️ Upload Image (Cover)</label>
+                  <div class="file-dropzone" id="cover-dropzone">
+                    <input type="file" id="cover-image" accept="image/png,image/bmp,image/jpeg" />
+                    <div class="dropzone-content">
+                      <span class="dropzone-icon">🖼️</span>
+                      <p>Seret &amp; letakkan atau <span class="dropzone-link">pilih gambar</span></p>
+                      <span class="dropzone-hint">PNG, BMP, JPEG</span>
+                    </div>
+                  </div>
+                  <div id="cover-preview-container" class="file-preview hidden">
+                    <div class="file-info">
+                      <span class="file-icon">🖼️</span>
+                      <span id="cover-filename" class="file-name">gambar.png</span>
+                      <button type="button" class="file-remove" id="cover-remove">✕</button>
+                    </div>
+                    <div class="image-preview">
+                      <img id="cover-preview" src="#" alt="Cover Image" />
+                    </div>
+                    <div id="capacity-info" class="capacity-info hidden">
+                      📊 Kapasitas: <span id="max-chars">-</span> karakter
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📝 Enter message to hide</label>
+                    <textarea 
+                        id="lsb-message" 
+                        class="form-input form-textarea" 
+                        placeholder="Masukkan ciphertext dari RSA atau ketik manual..."
+                        rows="3"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="lsb-char-count">0</span> karakter
+                    </div>
+                    <!-- 🔥 TOMBOL BARU: Ambil ciphertext dari RSA -->
+                    <button type="button" class="btn btn-sm btn-primary" id="use-rsa-cipher-btn" style="margin-top: 8px;">
+                        📋 Ambil Ciphertext dari RSA
+                    </button>
+                </div>
+
+                <div class="form-group">
+                  <button type="button" class="btn btn-lsb" id="lsb-hide-btn">
+                    📥 Hide Message
+                  </button>
+                </div>
+
+                <div id="lsb-hide-result" class="result-box hidden">
+                  <div class="result-label">✅ Pesan berhasil disembunyikan</div>
+                  <div class="image-preview">
+                    <img id="lsb-stego-preview" src="#" alt="Stego Image" />
+                  </div>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-primary" id="lsb-download-btn">⬇️ Download Image</button>
+                  </div>
+                  <div class="metrics-grid" id="lsb-metrics">
+                    <div class="metric-item">
+                      <span class="metric-label">MSE</span>
+                      <span class="metric-value" id="lsb-mse">-</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">PSNR</span>
+                      <span class="metric-value" id="lsb-psnr">-</span>
+                      <span class="metric-unit">dB</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+<!-- Card LSB: Extract Message -->
+<div class="card card-lsb">
+  <div class="card-header">
+    <div class="card-icon">📤</div>
+    <div>
+      <h3 class="card-title">LSB Extraction</h3>
+      <p class="card-subtitle">Ambil pesan dari gambar stego</p>
+    </div>
+    <span class="card-badge">Extract</span>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <label class="form-label">🖼️ Upload Stego Image</label>
+      <div class="file-dropzone" id="stego-dropzone">
+        <input type="file" id="stego-image" accept="image/png,image/bmp,image/jpeg" />
+        <div class="dropzone-content">
+          <span class="dropzone-icon">🖼️</span>
+          <p>Seret &amp; letakkan atau <span class="dropzone-link">pilih gambar</span></p>
+          <span class="dropzone-hint">PNG, BMP, JPEG</span>
+        </div>
+      </div>
+      <div id="stego-preview-container" class="file-preview hidden">
+        <div class="file-info">
+          <span class="file-icon">🖼️</span>
+          <span id="stego-filename" class="file-name">stego.png</span>
+          <button type="button" class="file-remove" id="stego-remove">✕</button>
+        </div>
+        <div class="image-preview">
+          <img id="extract-preview-img" src="#" alt="Stego Image" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <button type="button" class="btn btn-lsb" id="lsb-extract-btn">
+        🔍 Extract Message
+      </button>
+    </div>
+
+    <div id="lsb-extract-result" class="result-box hidden">
+      <div class="result-label">📝 Extracted message</div>
+      <code id="extracted-message-display" class="result-code">-</code>
+      <div class="result-stats">
+        <span>📊 Panjang pesan: <strong id="extracted-msg-len">-</strong> karakter</span>
+      </div>
+    <!-- Tombol Download PDF -->
+    <div class="btn-group" style="margin-top: 10px;">
+        <button type="button" class="btn btn-sm btn-primary" id="extracted-download-btn">
+            📥 Download sebagai PDF
+        </button>
+        <button type="button" class="btn btn-sm btn-copy" id="extracted-copy-btn">
+            📋 Copy
+        </button>
+    </div>
+    </div>
+
+    <div id="extracted-cipher-container" class="result-box hidden" style="margin-top: 10px;">
+      <div class="result-label">🔐 Extracted Ciphertext</div>
+      <code id="extracted-cipher-display" class="result-code">-</code>
+    </div>
+    
+    <div id="lsb-extract-empty" class="empty-state">
+      <span class="empty-icon">🔍</span>
+      <p>Upload gambar stego untuk mengekstrak pesan</p>
+    </div>
+  </div>
+</div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- TAB 3: KEYS -->
+        <!-- ============================================================ -->
+        <section id="keys" class="tab-panel">
+          <div class="panel-grid single">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon">📋</div>
+                <div>
+                  <h3 class="card-title">RSA Keys</h3>
+                  <p class="card-subtitle">Public key for encryption, Private key for decryption</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="keys-grid">
+                  <div class="key-box key-public">
+                    <div class="key-header">
+                      <span class="key-icon">🔓</span>
+                      <div>
+                        <h4>Public Key</h4>
+                        <p class="key-desc">Gunakan untuk ENKRIPSI</p>
+                      </div>
+                    </div>
+                    <pre id="public-key-display" class="key-content">Loading...</pre>
+                    <button type="button" class="btn btn-sm btn-primary" id="copy-public-btn">📋 Copy</button>
+                  </div>
+
+                  <div class="key-box key-private">
+                    <div class="key-header">
+                      <span class="key-icon">🔒</span>
+                      <div>
+                        <h4>Private Key</h4>
+                        <p class="key-desc">Gunakan untuk DEKRIPSI (RAHASIA!)</p>
+                      </div>
+                    </div>
+                    <pre id="private-key-display" class="key-content">Loading...</pre>
+                    <button type="button" class="btn btn-sm btn-secondary" disabled>🔒 Tidak Tersedia</button>
+                  </div>
+                </div>
+
+                <div class="key-info">
+                  <h4>📋 Key Information</h4>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Algorithm</span>
+                      <span class="info-value">RSA-OAEP</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Key Size</span>
+                      <span class="info-value">2048-bit</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Hash</span>
+                      <span class="info-value">SHA-256</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Padding</span>
+                      <span class="info-value">OAEP</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+  </body>
+</html>
